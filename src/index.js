@@ -6,29 +6,11 @@ import axios from 'axios';
 import './card.css';
 
 const Card = (props) => {
-	const style = {
-		margin: '1em',
-	}
-	const style2 = {
-		display: 'inline-block',
-		marginLeft: 10,
-	}
-
-	const style3 = {
-		fontsize: '1.25em',
-		fontWeight: 'bold',
-	}
-
-	const imgStyle = {
-		width: '75px',
-		heigth: 'auto',
-	}
-
 	return (
-		<div style={style}>
-			<img style={imgStyle} src={props.avatar_url} />
-			<div style={style2}>
-				<div style={style3}>
+		<div className='mainDiv'>
+			<img className='image' src={props.avatar_url} />
+			<div className='card'>
+				<div className='cardItem'>
 					{props.name}
 				</div>
 				<div>
@@ -42,7 +24,7 @@ const Card = (props) => {
 const CardList = (props) => {
 	return (
 		<div>
-			{props.cards.map(card => <Card {...card}/>)}
+			{props.cards.map(card => <Card key={card.id} {...card}/>)}
 		</div>
 	);
 };
@@ -51,6 +33,11 @@ class Form extends Component {
 	state = { userName: '' }
 	handleSubmit = (event) => {
 		event.preventDefault();
+		axios.get(`https://api.github.com/users/${this.state.userName}`)
+		.then(resp => {
+			this.props.onSubmit(resp.data);
+			this.setState({ userName: '' });
+		})
 	};
 	render (){
 		return (
@@ -69,23 +56,39 @@ class Form extends Component {
 
 class App extends Component {
 	state = {
-		cards: [
-			{
-				name: "Luis Esteban",
-				avatar_url: "https://avatars3.githubusercontent.com/u/13503868?s=460&v=4",
-				company: "Unosquare",
-			},
-			{
-				name: "Pepito",
-				avatar_url: "https://avatars3.githubusercontent.com/u/13503868?s=460&v=4",
-				company: "4MLabs",
-			}
-		]
-	}
+		cards: []
+	};
+
+	addNewCard = (cardInfo) => {
+		this.setState(prevState => ({
+			cards: prevState.cards.concat(cardInfo)
+		}));
+	};
+
+	popButton = (cardInfo) => {
+		let cards = [...this.state.cards]		
+		if (cards){
+			cards.pop();
+		} else {
+			cards = [];
+		}
+		this.setState({
+			cards: cards
+		});
+	};
+
+	resetButton = (cardInfo) => {
+		this.setState(prevState => ({
+			cards: []
+		}));
+	};
+
 	render() {
 		return (
 			<div>
-				<Form />
+				<Form onSubmit={this.addNewCard} />
+				<button className='cardItem' onClick={this.popButton}>Pop</button>
+				<button className='cardItem' onClick={this.resetButton}>Reset</button>
 				<CardList cards={this.state.cards} />
 			</div>
 		);

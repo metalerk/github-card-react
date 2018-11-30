@@ -1,3 +1,17 @@
-.info {
-	color: red;
+.mainDiv {
+	margin: 1em;
+}
+.card {
+	display: inline-block;
+	marginLeft: 10;
+}
+
+.cardItem {
+	fontsize: 1.25em;
+	fontWeight: bold;
+}
+
+.image {
+	width: 150px;
+	heigth: auto;
 }
